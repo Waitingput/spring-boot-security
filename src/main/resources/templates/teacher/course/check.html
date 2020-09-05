@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>groups</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+    <style>
+        caption{
+            caption-side: top;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<!--头部公共元素引入-->
+<div th:replace="commons/topbar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边栏公共元素引入-->
+        <div th:replace="teacher/course/course_sidebar::course_sidebar(currentURI='check')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 text-center">
+            <!--添加-->
+            <form id="checkForm" action="/teacher/course/check" method="post">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <input id="checkname" type="text" name="date" class="form-control" placeholder="签到名称">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input id="checkbegin" type="datetime-local" name="begin" class="form-control" placeholder="开始时间">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input id="checkend" type="datetime-local" name="end" class="form-control" placeholder="结束时间">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <button type="button" class="btn btn-success addCheck">添加</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive col-md-8">
+                <table class="table table-striped table-sm" th:if="${not #lists.isEmpty(checkworks)}">
+                    <caption>签到表信息：</caption>
+                    <span id="checkInfo"></span>
+                    <thead>
+                    <tr>
+                        <th>名称</th>
+                        <th>签到时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="checkwork:${checkworks}">
+                        <td th:text="${checkwork?.date}"></td>
+                        <td th:text="${#dates.format(checkwork?.begin,'HH:mm')}+'-'+${#dates.format(checkwork?.end,'HH:mm')}"></td>
+                        <td>
+                            <button th:attr="cwid=${checkwork?.cwid},sid=${session?.uid}"class="btn btn-sm btn-primary getStudentCheck">查看</button>
+                            <button th:attr="delete-uri=@{/teacher/course/check/}+${checkwork?.cwid}" class="btn btn-sm btn-danger deleteCheck">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <h3 th:if="${#lists.isEmpty(checkworks)}">
+                    <p style="color: red">暂无考勤信息！</p>
+                </h3>
+                <!--删除表单-->
+                <form method="post" id="deleteForm">
+                    <input type="hidden" name="_method" value="delete">
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="/asserts/js/jquery-3.4.0.min.js"></script>
+<script type="text/javascript" src="/asserts/js/popper.min.js"></script>
+<script type="text/javascript" src="/asserts/js/bootstrap.min.js"></script>
+<script>
+    //提交考勤表格式化时间
+    $(".addCheck").click(function () {
+        var data = {};
+        var date = $("#checkname").val();
+        var begin = new Date($("#checkbegin").val());
+        var end = new Date($("#checkend").val());
+        data.date=date;
+        data.begin=begin;
+        data.end=end;
+        formJson = JSON.stringify(data);
+        $.ajax({
+            url:"/teacher/course/check",
+            contentType:"application/json;charset=utf-8",
+            data:formJson,
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data==1){
+                    alert("添加成功!");
+                    window.location.reload();
+                }else {
+                    alert("添加失败!");
+                }
+            },
+            error:function () {
+                alert("error!");
+            }
+        });
+    });
+
+    //删除考勤表脚本
+    $('.deleteCheck').click(function () {
+        if(confirm("确定删除考勤表？")){
+            $('#deleteForm').attr('action',$(this).attr('delete-uri')).submit();
+        }
+        return false;
+    });
+    //
+    $(".getStudentCheck").click(function () {
+        var data = {};
+        var cwid = $(this).attr("cwid");
+        var sid = $(this).attr("sid");
+        data.checked = 1;
+        data.cwid = cwid;
+        data.sid = sid;
+        $.ajax({
+            url:"/student/course/check",
+            contentType:"application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType:"json",
+            type:"post",
+            success:function (data) {
+                if(data.checked == true){
+                    alert("签到成功!");
+                }
+            },
+            error:function () {
+                alert("error!");
+            }
+        });
+    });
+    /*$(function () {
+        $('.addStudentCheck').click(function () {
+            var cwid = $(this).attr("cwid");
+            var sid = $(this).attr("sid");
+            var checked = $(this).attr("checked");
+            alert(1);
+            $.ajax({
+                url:"/student/course/check",
+                contentType:"application/json:charset=utf-8",
+                data:'{"checked":"1","cwid":"1","sid":"1"}',
+                dataType:"json",
+                type:"post",
+                success:function (data) {
+                    alert(data);
+                },
+                error:function () {
+                    alert("error!");
+                }
+            });
+        });
+    });*/
+</script>
+<!-- Icons -->
+<script type="text/javascript" src="/asserts/js/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+</body>
+
+</html>

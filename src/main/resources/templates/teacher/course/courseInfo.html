@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>course</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+</head>
+
+<body>
+<!--头部公共元素引入-->
+<div th:replace="commons/topbar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边栏公共元素引入-->
+        <div th:replace="teacher/course/course_sidebar::course_sidebar(currentURI='main.html')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <fieldset disabled>
+                <div class="form-group col-md-6">
+                    <label>课程名称：</label>
+                    <input type="text" th:value="${tCourse?.course?.cname}" class="form-control"  placeholder="Course Name">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>教师名称：</label>
+                    <input type="text" th:value="${tCourse?.teacher?.tname}" class="form-control" placeholder="Teacher Name">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>上课班级：</label>
+                    <input type="text" th:value="${tCourse?.sclass?.cname}" class="form-control"  placeholder="Class Name">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>其他：</label>
+                    <input type="text" th:value="NULL" class="form-control" placeholder="Others">
+                </div>
+            </fieldset>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="/asserts/js/jquery-3.4.0.min.js"></script>
+<script type="text/javascript" src="/asserts/js/popper.min.js"></script>
+<script type="text/javascript" src="/asserts/js/bootstrap.min.js"></script>
+
+<!-- Icons -->
+<script type="text/javascript" src="/asserts/js/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+</body>
+
+</html>

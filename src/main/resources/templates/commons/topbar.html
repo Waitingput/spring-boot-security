@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="topbar" class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <div class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle" th:text="${session?.user_session?.username}" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            用户信息
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" th:href="@{/}+${session?.authoritie}+@{/info/}+${session?.uid}">个人信息</a>
+            <a class="dropdown-item" th:href="@{/user/changPwd/}+${session?.user_session?.username}">账号信息</a>
+        </div>
+    </div>
+    <div class="form-control form-control-dark w-100" style="text-align:center"><span>课程设计管理</span></div>
+    <!--<input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">-->
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="/logout">退出</a>
+        </li>
+    </ul>
+</nav>
+</body>
+</html>

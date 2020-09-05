@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>groups</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+    <style>
+        caption{
+            caption-side: top;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<!--头部公共元素引入-->
+<div th:replace="commons/topbar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边栏公共元素引入-->
+        <div th:replace="teacher/course/course_sidebar::course_sidebar(currentURI='projects')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 text-center">
+            <!--添加课题-->
+            <form action="/teacher/course/project" method="post">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <input type="text" name="pno" class="form-control" placeholder="编号">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="text" name="pname" class="form-control" placeholder="名称">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="text" name="phight" class="form-control" placeholder="难度">
+                    </div>
+                    <div class="form-group col-md-1">
+                        <input type="submit" class="btn btn-success" value="添加" placeholder="Group Num">
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-responsive col-md-8">
+                <!--有课题信息时显示-->
+                <table class="table table-striped table-sm" th:if="${not #lists.isEmpty(projects)}">
+                        <caption>所有课题信息：</caption>
+                    <thead>
+                    <tr>
+                        <th>课题号</th>
+                        <th>课题名称</th>
+                        <th>难度</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="project:${projects}">
+                        <td th:text="${project?.pno}"></td>
+                        <td th:text="${project?.pname}"></td>
+                        <td th:text="${project?.phight}"></td>
+                        <td>
+                            <button th:attr="pid=${project?.pid}" class="btn btn-sm btn-danger changeProject">修改</button>
+                            <button th:attr="delete-uri=@{/teacher/course/project/}+${project?.pid}" class="btn btn-sm btn-danger deleteProject">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--没有课题信息时显示-->
+                <h2 th:if="${#lists.isEmpty(projects)}">
+                    <span style="color: red">暂无课题信息!</span>
+                </h2>
+                <!--删除表单-->
+                <form method="post" id="deleteForm">
+                    <input type="hidden" name="_method" value="delete">
+                </form>
+                <!--修改表单-->
+                <form method="post" id="changeForm">
+                    <input type="hidden" name="_method" value="put">
+                    <input type="hidden" name="sid">
+                    <input type="hidden" name="gid">
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="/asserts/js/jquery-3.4.0.min.js"></script>
+<script type="text/javascript" src="/asserts/js/popper.min.js"></script>
+<script type="text/javascript" src="/asserts/js/bootstrap.min.js"></script>
+<script>
+    $('.deleteProject').click(function () {
+        if(confirm("确定删除此题？")){
+            $('#deleteForm').attr('action',$(this).attr('delete-uri')).submit();
+        }
+        return false;
+    });
+    $('.changeProject').click(function () {
+        $("#addForm input[name='sid']").val($(this).attr('sid'));
+        $("#addForm input[name='pid']").val($(this).attr('pid'));
+        $("#addForm").submit();
+    })
+</script>
+<!-- Icons -->
+<script type="text/javascript" src="/asserts/js/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+</body>
+
+</html>

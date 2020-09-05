@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>密码修改</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+</head>
+<body>
+<!--头部公共元素引入-->
+<div th:replace="commons/topbar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边公共元素-->
+        <div th:replace="commons/sidebar::#sidebar"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <form th:action="@{/user/changePwd}" method="post">
+                <input type="hidden" name="_method" value="put">
+                <div class="form-group row">
+                    <label>账号：</label>
+                    <input name="username" type="text" readonly class="form-control-plaintext"th:value="${session?.user_session?.username}">
+                </div>
+                <div class="form-group row">
+                    <label>密码：</label>
+                    <p th:text="${msg}" th:if="${not #strings.isEmpty(msg)}" style="color: red;"></p>
+                    <input name="password" type="password" class="form-control" placeholder="Password">
+                </div>
+                <div class="form-group row">
+                    <label>新密码：</label>
+                    <input name="newpassword" type="password" class="form-control" placeholder="newPassword">
+                </div>
+                <button type="submit" class="btn btn-primary">修改</button>
+            </form>
+        </main>
+    </div>
+</div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<script type="text/javascript" src="/asserts/js/jquery-3.4.0.min.js"></script>
+<script type="text/javascript" src="/asserts/js/popper.min.js"></script>
+<script type="text/javascript" src="/asserts/js/bootstrap.min.js"></script>
+<!-- Icons -->
+<script type="text/javascript" src="/asserts/js/feather.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    onload = function () {
+        var msg = [[${msg}]];
+        if(msg){
+            confirm(msg);
+        }
+    };
+</script>
+<script>
+    feather.replace()
+</script>
+</body>
+</html>

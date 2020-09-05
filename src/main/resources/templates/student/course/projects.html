@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>groups</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+    <style>
+        caption{
+            caption-side: top;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<!--头部公共元素引入-->
+<div th:replace="commons/topbar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边栏公共元素引入-->
+        <div th:replace="student/course/course_sidebar::course_sidebar(currentURI='projects')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 text-center">
+            <!--有选题信息时显示-->
+            <div class="table-responsive col-md-8" th:if="${not #lists.isEmpty(projects)}">
+                <!--选择了分组时显示-->
+                <table class="table table-striped table-sm" th:if="${not #strings.isEmpty(studentProject)}">
+                    <caption>已选课题信息：</caption>
+                    <thead>
+                    <tr>
+                        <th>课题号</th>
+                        <th>课题名称</th>
+                        <th>课题难度</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${studentProject?.pno}"></td>
+                        <td th:text="${studentProject?.pname}"></td>
+                        <td th:text="${studentProject?.phight}"></td>
+                        <td>
+                            <button th:attr="delete-uri=@{/student/course/project/}+${studentProject?.pid}"class="btn btn-sm btn-danger deleteStudentGroup">退选</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--未选择课题时显示-->
+                <h3 th:if="${#strings.isEmpty(studentProject)}">
+                    <p style="color: red">暂未选择课题！</p>
+                </h3>
+                <!--退选课题表单-->
+                <form method="post" id="deleteForm">
+                    <input type="hidden" name="_method" value="delete">
+                </form>
+            </div>
+
+            <div class="table-responsive col-md-8">
+                <!--有课题信息时显示-->
+                <table class="table table-striped table-sm" th:if="${not #lists.isEmpty(projects)}">
+                        <caption>所有课题信息：</caption>
+                    <thead>
+                    <tr>
+                        <th>课题号</th>
+                        <th>课题名称</th>
+                        <th>难度</th>
+                        <th th:if="${#strings.isEmpty(studentProject)}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="project:${projects}">
+                        <td th:text="${project?.pno}"></td>
+                        <td th:text="${project?.pname}"></td>
+                        <td th:text="${project?.phight}"></td>
+                        <td th:if="${#strings.isEmpty(studentProject)}">
+                           <!-- <a th:href="@{/student/course/group/}+${groups?.gid}" class="btn btn-sm btn-primary deleteBtn">详情</a>-->
+                            <button th:attr="sid=${session?.uid},pid=${project?.pid}" class="btn btn-sm btn-success addStudentGroup">选择</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--没有课题信息时显示-->
+                <h2 th:if="${#lists.isEmpty(projects)}">
+                    <span style="color: red">暂无课题信息!</span>
+                </h2>
+                <!--选题表单-->
+                <form method="post" id="addForm" action="/student/course/project">
+                    <input type="hidden" name="sid">
+                    <input type="hidden" name="pid">
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="/asserts/js/jquery-3.4.0.min.js"></script>
+<script type="text/javascript" src="/asserts/js/popper.min.js"></script>
+<script type="text/javascript" src="/asserts/js/bootstrap.min.js"></script>
+<script>
+    $('.deleteStudentGroup').click(function () {
+        if(confirm("确定退选此题？")){
+            $('#deleteForm').attr('action',$(this).attr('delete-uri')).submit();
+        }
+        return false;
+    });
+    $('.addStudentGroup').click(function () {
+        $("#addForm input[name='sid']").val($(this).attr('sid'));
+        $("#addForm input[name='pid']").val($(this).attr('pid'));
+        $("#addForm").submit();
+    })
+</script>
+<!-- Icons -->
+<script type="text/javascript" src="/asserts/js/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+</body>
+
+</html>

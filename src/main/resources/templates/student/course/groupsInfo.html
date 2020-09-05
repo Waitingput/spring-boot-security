@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>groups</title>
+    <!-- Bootstrap core CSS -->
+    <link href="asserts/css/bootstrap.min.css" th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="static/asserts/css/dashboard.css" th:href="@{/asserts/css/dashboard.css}" rel="stylesheet">
+    <style>
+        caption{
+            caption-side: top;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<!--头部公共元素引入-->
+<div th:replace="commons/topbar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!--侧边栏公共元素引入-->
+        <div th:replace="student/course/course_sidebar::course_sidebar(currentURI='group')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 text-center">
+            <!--有分组信息时显示-->
+            <div class="table-responsive col-md-8" th:if="${not #lists.isEmpty(allGroup)}">
+                <!--选择了分组时显示-->
+                <table class="table table-striped table-sm" th:if="${not #strings.isEmpty(studentGroup)}">
+                    <caption>已选分组信息：</caption>
+                    <thead>
+                    <tr>
+                        <th>组号</th>
+                        <th>已选/总人数</th>
+                        <th>组长</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${studentGroup?.gno}"></td>
+                        <td th:text="${studentGroup?.snu}+'/'+${studentGroup?.gnu}"></td>
+                        <td th:text="${studentGroup?.leader?.sname}"></td>
+                        <td>
+                            <a class="btn btn-sm btn-primary" th:href="@{/student/course/group/}+${studentGroup?.gid}">详情</a>
+                            <button th:attr="delete-uri=@{/student/course/group/}+${studentGroup?.gid}"class="btn btn-sm btn-danger deleteStudentGroup">退出</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--未选择分组时显示-->
+                <h3 th:if="${#strings.isEmpty(studentGroup)}">
+                    <p style="color: red">暂未选择分组！</p>
+                </h3>
+                <!--退出分组表单-->
+                <form method="post" id="deleteForm">
+                    <input type="hidden" name="_method" value="delete">
+                </form>
+            </div>
+
+            <div class="table-responsive col-md-8">
+                <!--有分组信息时显示-->
+                <table class="table table-striped table-sm" th:if="${not #lists.isEmpty(allGroup)}">
+                        <caption>所有分组信息：</caption>
+                    <thead>
+                    <tr>
+                        <th>组号</th>
+                        <th>已选/总人数</th>
+                        <th>组长</th>
+                        <th th:if="${#strings.isEmpty(studentGroup)}">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="groups:${allGroup}">
+                        <td th:text="${groups?.gno}"></td>
+                        <td th:text="${groups?.snu}+'/'+${groups?.gnu}"></td>
+                        <td th:text="${#strings.isEmpty(groups?.leader)?'无':groups?.leader?.sname}"></td>
+                        <td th:if="${#strings.isEmpty(studentGroup)}">
+                            <a th:href="@{/student/course/group/}+${groups?.gid}" class="btn btn-sm btn-primary deleteBtn">详情</a>
+                            <button th:attr="sid=${session?.uid},gid=${groups?.gid},flag = ${groups?.snu} < ${groups?.gnu} ? true : false" class="btn btn-sm btn-danger addStudentGroup">加入</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <!--没有分组信息时显示-->
+                <h2 th:if="${#lists.isEmpty(allGroup)}">
+                    <span style="color: red">暂无分组信息!</span>
+                </h2>
+                <!--加入分组表单-->
+                <form method="post" id="addForm" action="/student/course/group">
+                    <input type="hidden" name="sid">
+                    <input type="hidden" name="gid">
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="/asserts/js/jquery-3.4.0.min.js"></script>
+<script type="text/javascript" src="/asserts/js/popper.min.js"></script>
+<script type="text/javascript" src="/asserts/js/bootstrap.min.js"></script>
+<script>
+    $('.deleteStudentGroup').click(function () {
+        if(confirm("确定退出分组？")){
+            $('#deleteForm').attr('action',$(this).attr('delete-uri')).submit();
+        }
+        return false;
+    });
+    $('.addStudentGroup').click(function () {
+        var flag = $(this).attr('flag');
+        if(flag=='true'){
+            $("#addForm input[name='sid']").val($(this).attr('sid'));
+            $("#addForm input[name='gid']").val($(this).attr('gid'));
+            $("#addForm").submit();
+        }else alert("此组已满！");
+    })
+</script>
+<!-- Icons -->
+<script type="text/javascript" src="/asserts/js/feather.min.js"></script>
+<script>
+    feather.replace()
+</script>
+
+</body>
+
+</html>
